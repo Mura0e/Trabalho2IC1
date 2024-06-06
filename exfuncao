@@ -1,0 +1,41 @@
+#include <stdio.h>
+
+int max(int *arr, int tam){
+    int a=0;
+    for(int i=0; i<tam; i++){
+        if(arr[i]>a){
+            a=arr[i];
+        }
+    }
+    return a;
+}
+
+int min(int *arr, int tam){
+    int a=0;
+    for(int i=0; i<tam; i++){
+        if(arr[i]>a){
+            a=arr[i];
+        }
+    }
+    for(int i=0; i<tam; i++){
+        if(arr[i]<a){
+            a=arr[i];
+        }
+    }
+    return a;
+}
+
+int main(){
+    int n, vetor[100], vmax, vmin, c;
+    printf("Quantos números quer digitar? ");
+    scanf("%d", &n);
+    printf("Digite %d números inteiros: ", n);
+    for(int i=0; i<n; i++){
+        scanf("%d", &vetor[i]);
+        while((c = getchar()) != '\n' && c != EOF)
+        printf("\n");
+    }
+    vmin=min(vetor, n);
+    vmax=max(vetor, n);
+    printf("Max: %d\nMin:%d", vmax, vmin);
+}
