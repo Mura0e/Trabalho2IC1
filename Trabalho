@@ -19,11 +19,23 @@ struct cliente {
 
 typedef struct cliente cliente;
 
+void limps(char *str){
+    int comp = strlen(str);
+    if(str[comp - 1] == '\n') {
+        str[comp - 1] = '\0';
+    }
+}
+
+void limpd(){
+    int c;
+    while((c=getchar()) != '\n' && c != EOF);
+}
+
 int main() {
 
     setlocale(LC_ALL, "Portuguese");
 
-    int opcao, i, i2, c, user, edit;
+    int opcao, i, i2, user, edit;
     char busca[100];
     cliente registro[100];
 
@@ -47,7 +59,7 @@ int main() {
         puts("[7] - Sair");
         printf("Selecione uma opção: ");
         scanf("%d", &opcao);
-        while((c = getchar()) != '\n' && c != EOF);
+        limpd();
         switch(opcao) {
         case 1:
             for(i=0; i<100; i++) {
@@ -58,15 +70,17 @@ int main() {
             }
             printf("\nInsira o nome completo do cliente: ");
             fgets(registro[user].nome, 99, stdin);
+            limps(registro[user].nome);
             printf("\n\nInsira o CPF do cliente (com . e -): ");
             scanf("%d.%d.%d-%d", &registro[user].cpf[0], &registro[user].cpf[1], &registro[user].cpf[2], &registro[user].cpf[3]);
-            while((c=getchar()) != '\n' && c != EOF);
+            limpd();
             printf("\n\nInsira a data de nascimento do cliente (dd/mm/aaaa): ");
             scanf("%d/%d/%d", &registro[user].dataNas[0], &registro[user].dataNas[1], &registro[user].dataNas[2]);
-            while((c = getchar()) != '\n' && c != EOF);
+            limpd();
             printf("\n\nInsira o endereço do cliente: ");
             fgets(registro[user].endereco, 149, stdin);
-            registro[i].verReg=1;
+            limps(registro[user].endereco);
+            registro[user].verReg=1;
             printf("\n\nCliente registrado!\n");
             break;
         case 2:
@@ -76,8 +90,9 @@ int main() {
                     printf("%s\n", registro[i].nome);
                 }
             }
-            printf("\n\nPara qual cliente gostaria de registrar um emprestimo? ");
+            printf("Para qual cliente gostaria de registrar um emprestimo? ");
             fgets(busca, 99, stdin);
+            limps(busca);
             for(i=0; i<100; i++){
                 if(strcmp(busca, registro[i].nome) == 0){
                 break;
@@ -90,16 +105,17 @@ int main() {
             user=i;
             printf("Qual a data do emprestimo (dd/mm/aaaa)? ");
             scanf("%d/%d/%d", &registro[user].dataEmp[0], &registro[user].dataEmp[1], &registro[user].dataEmp[2]);
-            while((c=getchar()) != '\n' && c != EOF);
+            limpd();
             printf("\n\nQual o valor total do emprestimo em reais? ");
             scanf("%lf", &registro[user].emp);
-            while((c = getchar()) != '\n' && c != EOF);
-            if(registro[user].emp > 10000 || registro[user].emp <0){
+            limpd();
+            if(registro[user].emp > 10000 || registro[user].emp <= 0){
                 printf("Esse valor não é válido para um emprestimo!");
                 break;
             }
             printf("\n\nEm quantas parcelas o emprestimo será pago? ");
             scanf("%d", &registro[user].numParc);
+            limpd();
             if(registro[user].numParc > 10 || registro[user].numParc <1){
                 printf("Este não é um número de parcelas válido\n");
                 break;
@@ -107,7 +123,7 @@ int main() {
             for(i=0; i<registro[user].numParc; i++){
                 printf("\nQual o valor da parcela %d? ", i+1);
                 scanf("%lf", &registro[user].valorParc[i][0]);
-                while((c = getchar()) != '\n' && c != EOF);
+                limpd();
             }
             registro[user].verEmp=1;
             printf("\nEmprestimo para o cliente %s foi registrado!\n", registro[user].nome);
@@ -121,6 +137,7 @@ int main() {
             }
             printf("Para qual cliente gostaria de alterar o estado da parcela? ");
             fgets(busca, 99, stdin);
+            limps(busca);
             for(i=0; i<100; i++){
                 if(strcmp(registro[i].nome, busca) == 0){
                     break;
@@ -131,7 +148,7 @@ int main() {
                 break;
             }
             user=i;
-            printf("Aqui estão as parcelas não pagas do cliente:\n");
+            printf("Aqui estão as parcelas do cliente:\n");
             for(i=0; i<registro[user].numParc; i++){
                 printf("%d\t", i+1);
                 printf("%.2lf\t", registro[user].valorParc[i][0]);
@@ -144,12 +161,13 @@ int main() {
             }
             printf("\n\nQual o número da parcela cujo estado será alterado? ");
             scanf("%d", &i);
-            while((c=getchar()) != '\n' && c != EOF);
+            limpd();
             i--;
             if(registro[user].valorParc[i][1] == 0){
                 registro[user].valorParc[i][1]=1;
                 printf("Qual a data do pagamento da parcela? (dd/mm/aaaa) ");
                 scanf("%d/%d/%d", &registro[user].dataPag[0][i], &registro[user].dataPag[1][i], &registro[user].dataPag[2][i]);
+                limpd();
                 printf("A parcela %d foi marcada como paga!\n", i+1);
                 break;
             }
@@ -167,6 +185,7 @@ int main() {
             }
             printf("Qual o cliente cujas informações devem ser mostradas? ");
             fgets(busca, 99, stdin);
+            limps(busca);
             for(i=0; i<100; i++){
                 if(strcmp(registro[i].nome, busca) == 0){
                     break;
@@ -179,7 +198,7 @@ int main() {
             user=i;
             puts("Aqui estão as informações do cliente:\n");
             printf("Nome: %s", registro[user].nome);
-            printf("Data de nascimento: %d/%d/%d", registro[user].dataNas[0], registro[user].dataNas[1], registro[user].dataNas[2]);
+            printf("\nData de nascimento: %d/%d/%d", registro[user].dataNas[0], registro[user].dataNas[1], registro[user].dataNas[2]);
             printf("\nCPF: %d.%d.%d-%d", registro[user].cpf[0], registro[user].cpf[1], registro[user].cpf[2], registro[user].cpf[3]);
             printf("\nEndereço: %s", registro[user].endereco);
             if(registro[user].verEmp == 1){
@@ -188,7 +207,7 @@ int main() {
                 printf("\nParcelas do emprestimo:\n ");
             }
             else{
-                printf("Este cliente não possui um emprestimo ou ocorreu um erro em sua ultima atualização do emprestimo!\n");
+                printf("\nEste cliente não possui um emprestimo ou ocorreu um erro em sua ultima atualização do emprestimo!\n\n");
             }
             for(i=0; i<registro[user].numParc; i++){
                 if(registro[user].valorParc[i][1] == 0){
@@ -208,6 +227,7 @@ int main() {
             }
             printf("Qual o cliente cujas informações devem ser alteradas? ");
             fgets(busca, 99, stdin);
+            limps(busca);
             for(i=0; i<100; i++){
                 if(strcmp(registro[i].nome, busca) == 0){
                     break;
@@ -226,77 +246,57 @@ int main() {
             puts("[5] - Informações do emprestimo");
             printf("Sua opção: ");
             scanf("%d", &edit);
-            while((c=getchar()) != '\n' && EOF);
+            limpd();
             switch(edit){
                 case 1:
                     printf("Insira o novo nome para o cliente: ");
                     fgets(registro[user].nome, 99, stdin);
+                    limps(registro[user].nome);
                     printf("O nome do cliente foi atualizado!\n");
                     break;
                 case 2:
                     printf("Insira o novo endereço do cliente: ");
                     fgets(registro[user].endereco, 149, stdin);
+                    limps(registro[user].endereco);
                     printf("O endereço do cliente foi atualizado!\n");
                     break;
                 case 3:
                     printf("Insira a correção do CPF (com . e -): ");
                     scanf("%d.%d.%d-%d", &registro[user].cpf[0], &registro[user].cpf[1], &registro[user].cpf[2], &registro[user].cpf[3]);
-                    while((c=getchar()) != '\n' && c != EOF);
+                    limpd();
                     printf("O CPF foi corrigido!\n");
                     break;
                 case 4:
                     printf("Insira a correção da data de nascimento: ");
                     scanf("%d/%d/%d", &registro[user].dataNas[0], &registro[user].dataNas[1], &registro[user].dataNas[2]);
-                    while((c = getchar()) != '\n' && c != EOF);
+                    limpd();
                     printf("A data de nascimento foi corrigida!\n");
                     break;
                 case 5:
                     registro[user].verEmp=0;
                     for(i=0; i<10; i++){
                         registro[user].valorParc[i][1]=0;
-                        
                     }
                     printf("Qual a nova data do emprestimo (dd/mm/aaaa)? ");
                     scanf("%d/%d/%d", &registro[user].dataEmp[0], &registro[user].dataEmp[1], &registro[user].dataEmp[2]);
-                    while((c=getchar()) != '\n' && c != EOF);
+                    limpd();
                     printf("\n\nQual o novo valor total do emprestimo em reais? ");
                     scanf("%lf", &registro[user].emp);
-                    while((c = getchar()) != '\n' && c != EOF);
+                    limpd();
                     if(registro[user].emp > 10000 || registro[user].emp <0){
                         printf("Esse valor não é válido para um emprestimo!");
                         break;
                     }
                     printf("\n\nEm quantas parcelas o novo emprestimo será pago? ");
                     scanf("%d", &registro[user].numParc);
+                    limpd();
                     if(registro[user].numParc > 10 || registro[user].numParc <1){
                         printf("Este não é um número de parcelas válido");
                         break;
                     }
-                    for(i=0; i<registro[user].numParc; i++){
-                                        registro[user].dataVenc[0][i]=registro[user].dataEmp[0];
-                                        registro[user].dataVenc[1][i]=registro[user].dataEmp[1]+i+1;
-                                        registro[user].dataVenc[2][i]=registro[user].dataEmp[2];
-                                        if(registro[user].dataVenc[0][i] > 30 && registro[user].dataVenc[1][i] == 4 || registro[user].dataVenc[1][i] == 6 || registro[user].dataVenc[1][i] == 9 || registro[user].dataVenc[1][i] == 11){
-                                        registro[user].dataVenc[0][i]-=30;
-                                        registro[user].dataVenc[1][i]+=1;
-                }
-                if(registro[user].dataVenc[0][i] > 28){
-                    if(registro[user].dataVenc[0][i] == 29 && registro[user].dataVenc[2][i]%4 == 0){
-                        break;
-                    }
-                    else{
-                        registro[user].dataVenc[0][i]-=28;
-                        registro[user].dataVenc[1][i]+=1;
-                    }
-                }
-                if(registro[user].dataVenc[1][i] > 12){
-                    registro[user].dataVenc[1][i]-=12;
-                    registro[user].dataVenc[2][i]+=1;
-                }
                         printf("\nQual o valor da parcela %d? ", i+1);
                         scanf("%lf", &registro[user].valorParc[i][0]);
-                        while((c = getchar()) != '\n' && c != EOF);
-                    }
+                        limpd();
                     registro[user].verEmp=1;
                     printf("\nEmprestimo para o cliente %s foi alterado!\n", registro[user].nome);
                     break;
@@ -311,6 +311,7 @@ int main() {
             }
             printf("Qual cliente deseja excluir? ");
             fgets(busca, 99, stdin);
+            limps(busca);
             for(i=0; i < 100; i++){
                 if((strcmp(busca, registro[i].nome)) == 0){
                     break;
@@ -336,3 +337,4 @@ int main() {
     while(opcao != 7);
     return 0;
 }//chave main
+
