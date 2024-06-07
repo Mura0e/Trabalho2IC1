@@ -1,3 +1,13 @@
+/* Membros do grupo:
+
+José Eduardo Sato Maia                          Número USP: 15464527
+Vinicius Scalon Ballan Ferreira da Silva        Número USP: 13782272
+Kawe Henrique Oliveira Silva                    Número USP: 15576891
+Lara
+Vinícius Toshio Ribeiro Nishimura               Número USP: 15491984
+
+*/
+
 #include <stdio.h>
 #include <locale.h>
 #include <string.h>
@@ -31,6 +41,8 @@ void limpd(){
     while((c=getchar()) != '\n' && c != EOF);
 }
 
+void data(int *a, int *b, int *c, int parc);
+
 int main() {
 
     setlocale(LC_ALL, "Portuguese");
@@ -47,7 +59,6 @@ int main() {
             registro[i].valorParc[i2][1]=0;
         }
     }
-
     do {
         puts("-----Menu-----");
         puts("[1] - Registrar cliente");
@@ -69,8 +80,17 @@ int main() {
                 }
             }
             printf("\nInsira o nome completo do cliente: ");
-            fgets(registro[user].nome, 99, stdin);
-            limps(registro[user].nome);
+            fgets(busca, 99, stdin);
+            limps(busca);
+            for(i=0; i<100; i++){
+                if(strcmp(registro[i].nome, busca) == 0){
+                    printf("Esse cliente já possui um empréstimo!");
+                    break;
+                }
+            }
+            if(i == 100){
+                strcpy(registro[user].nome, busca);
+            }
             printf("\n\nInsira o CPF do cliente (com . e -): ");
             scanf("%d.%d.%d-%d", &registro[user].cpf[0], &registro[user].cpf[1], &registro[user].cpf[2], &registro[user].cpf[3]);
             limpd();
@@ -124,6 +144,12 @@ int main() {
                 printf("\nQual o valor da parcela %d? ", i+1);
                 scanf("%lf", &registro[user].valorParc[i][0]);
                 limpd();
+            }
+            for(i=0; i<registro[user].numParc; i++){
+                registro[user].dataVenc[0][i]=registro[user].dataEmp[0];
+                registro[user].dataVenc[1][i]=registro[user].dataEmp[1];
+                registro[user].dataVenc[2][i]=registro[user].dataEmp[2];
+                data(&registro[user].dataVenc[0][i], &registro[user].dataVenc[1][i], &registro[user].dataVenc[2][i], i);
             }
             registro[user].verEmp=1;
             printf("\nEmprestimo para o cliente %s foi registrado!\n", registro[user].nome);
@@ -338,3 +364,21 @@ int main() {
     return 0;
 }//chave main
 
+
+
+void data(int *a, int *b, int *c, int parc){
+    int i, dias[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    
+    *b+=parc+1;
+	while (*b > 12){
+	*b-=12;
+	(*c)++;
+	}
+	if (*c % 4 == 0 && *c % 100 != 0 || *c % 400 == 0){
+    dias[1] = 29;
+    }
+    if (*a > dias[*b-1]){
+	    *a = dias[*b-1];
+    }
+	printf ("%d/%d/%d\n", *a, *b, *c);
+}
