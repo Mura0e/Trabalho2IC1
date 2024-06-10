@@ -20,7 +20,7 @@ struct cliente {
     int dataEmp[3];
     double emp;
     int numParc;
-    double valorParc[10][2];
+    double valorParc[10][2]; //no segundo parametro, posição 0 indica valor e posição 1 indica estado
     int verReg;
     int verEmp;
     int dataVenc[3][10];
@@ -29,34 +29,35 @@ struct cliente {
 
 typedef struct cliente cliente;
 
-void limps(char *str){
+void limps(char *str){ //serve para remover uma quebra de linha em uma string
     int comp = strlen(str);
     if(str[comp - 1] == '\n') {
         str[comp - 1] = '\0';
     }
 }
 
-void limpd(){
+void limpd(){ //serve para limpar o buffer após o scanf
     int c;
     while((c=getchar()) != '\n' && c != EOF);
 }
 
-void data(int *a, int *b, int *c, int parc);
+void data(int *a, int *b, int *c, int parc); /*calcula uma data e corrige se inexistente (ex: 31/02/2024)
+definicao da funcao no fim do codigo*/
 
 int main() {
 
-    setlocale(LC_ALL, "Portuguese");
+    setlocale(LC_ALL, "Portuguese"); //permite o uso de acentos e cedilha
 
     int opcao, i, i2, user, edit;
     char busca[100];
     cliente registro[100];
 
     for(i=0; i<100; i++) {
-        registro[i].verReg=0;
-        registro[i].verEmp=0;
+        registro[i].verReg=0; //afirma não haver nenhum usuario registrado
+        registro[i].verEmp=0; //afirma não haver nenhum emprestimo registrado
         for(i2=0; i2<10; i2++){
-            registro[i].valorParc[i2][0]=0;
-            registro[i].valorParc[i2][1]=0;
+            registro[i].valorParc[i2][0]=0; //como não existem emprestimos, todas as parcelas valem 0
+            registro[i].valorParc[i2][1]=0; //afirma não haver nenhuma parcela paga
         }
     }
     do {
@@ -72,24 +73,24 @@ int main() {
         scanf("%d", &opcao);
         limpd();
         switch(opcao) {
-        case 1:
+        case 1: //registrar cliente
             for(i=0; i<100; i++) {
                 if(registro[i].verReg == 0) {
                     user=i;
-                    break;
+                    break; //busca um espaço vazio para o novo usuario
                 }
             }
             printf("\nInsira o nome completo do cliente: ");
             fgets(busca, 99, stdin);
             limps(busca);
             for(i=0; i<100; i++){
-                if(strcmp(registro[i].nome, busca) == 0){
+                if(strcmp(registro[i].nome, busca) == 0){ //verifica se existe emprestimo no nome do cliente a ser registrado
                     printf("Esse cliente já possui um empréstimo!");
                     break;
                 }
             }
             if(i == 100){
-                strcpy(registro[user].nome, busca);
+                strcpy(registro[user].nome, busca); //se nao existir, permite que atribua-se um nome
             }
             printf("\n\nInsira o CPF do cliente (com . e -): ");
             scanf("%d.%d.%d-%d", &registro[user].cpf[0], &registro[user].cpf[1], &registro[user].cpf[2], &registro[user].cpf[3]);
@@ -103,10 +104,10 @@ int main() {
             registro[user].verReg=1;
             printf("\n\nCliente registrado!\n");
             break;
-        case 2:
+        case 2: //cadastrar emprestimo
             printf("Aqui estão todos os clientes registrados:\n");
             for(i=0; i<100; i++) {
-                if(registro[i].verReg == 1) {
+                if(registro[i].verReg == 1) { //verifica quais clientes estão registrados e imprime
                     printf("%s\n", registro[i].nome);
                 }
             }
@@ -114,33 +115,33 @@ int main() {
             fgets(busca, 99, stdin);
             limps(busca);
             for(i=0; i<100; i++){
-                if(strcmp(busca, registro[i].nome) == 0){
+                if(strcmp(busca, registro[i].nome) == 0){ //busca pelo usuario fornecido
                 break;
                 }
             }
-            if(i == 100 || registro[i].verReg == 0){
+            if(i == 100 || registro[i].verReg == 0){ //verifica se foi encontrado o usuario ou se o usuario escolhido foi excluido anteriormente
                 printf("Usuário não encontrado!\n");
                 break;
             }
-            user=i;
-            printf("Qual a data do emprestimo (dd/mm/aaaa)? ");
+            user=i; //define o usuario
+            printf("\n\nQual a data do emprestimo (dd/mm/aaaa)? ");
             scanf("%d/%d/%d", &registro[user].dataEmp[0], &registro[user].dataEmp[1], &registro[user].dataEmp[2]);
             limpd();
             printf("\n\nQual o valor total do emprestimo em reais? ");
             scanf("%lf", &registro[user].emp);
             limpd();
-            if(registro[user].emp > 10000 || registro[user].emp <= 0){
-                printf("Esse valor não é válido para um emprestimo!");
-                break;
+            if(registro[user].emp > 10000 || registro[user].emp <= 0){ //verifica se o emprestimo esta dentro do valor estipulado
+                printf("Esse valor não é válido para um emprestimo!\n");
+                break; //impede a continuacao do caso
             }
-            printf("\n\nEm quantas parcelas o emprestimo será pago? ");
+            printf("\n\nEm quantas parcelas o emprestimo será pago? "); 
             scanf("%d", &registro[user].numParc);
             limpd();
-            if(registro[user].numParc > 10 || registro[user].numParc <1){
+            if(registro[user].numParc > 10 || registro[user].numParc <1){ //verifica se o numero de parcelas esta dentro do estipulado
                 printf("Este não é um número de parcelas válido\n");
                 break;
             }
-            for(i=0; i<registro[user].numParc; i++){
+            for(i=0; i<registro[user].numParc; i++){ //recebe valores das parcelas
                 printf("\nQual o valor da parcela %d? ", i+1);
                 scanf("%lf", &registro[user].valorParc[i][0]);
                 limpd();
@@ -150,11 +151,11 @@ int main() {
                 registro[user].dataVenc[1][i]=registro[user].dataEmp[1];
                 registro[user].dataVenc[2][i]=registro[user].dataEmp[2];
                 data(&registro[user].dataVenc[0][i], &registro[user].dataVenc[1][i], &registro[user].dataVenc[2][i], i);
-            }
-            registro[user].verEmp=1;
+            } //define a data de vencimento como data do emprestimo para entao calcular a data de vencimento e corrigir
+            registro[user].verEmp=1; //apos tudo ocorrer com sucesso, marca o emprestimo como existente
             printf("\nEmprestimo para o cliente %s foi registrado!\n", registro[user].nome);
             break;
-        case 3:
+        case 3: //marcar parcela como paga ou nao paga
             printf("Aqui estão todos os clientes registrados:\n");
             for(i=0; i<100; i++) {
                 if(registro[i].verReg == 1) {
@@ -175,37 +176,37 @@ int main() {
             }
             user=i;
             printf("Aqui estão as parcelas do cliente:\n");
-            for(i=0; i<registro[user].numParc; i++){
-                printf("%d\t", i+1);
-                printf("%.2lf\t", registro[user].valorParc[i][0]);
-                if(registro[user].valorParc[i][1] == 1){
+            for(i=0; i<registro[user].numParc; i++){ //define o numero de repeticoes maxima como o numero de parcelas do cliente
+                printf("%d\t", i+1); //imprime o numero da parcela
+                printf("%.2lf\t", registro[user].valorParc[i][0]); //imprime o valor da parcela
+                if(registro[user].valorParc[i][1] == 1){ //verifica se a parcela foi paga
                     puts("Paga");
                 }
-                else{
+                else{ //se nao foi paga, imprime 'Nao paga'
                     puts("Não paga");
                 }
             }
             printf("\n\nQual o número da parcela cujo estado será alterado? ");
             scanf("%d", &i);
             limpd();
-            i--;
-            if(registro[user].valorParc[i][1] == 0){
-                registro[user].valorParc[i][1]=1;
+            i--; //decrementa o valor de i para utilizar no vetor que começa na posicao 0
+            if(registro[user].valorParc[i][1] == 0){ //verifica se a parcela esta marcada como nao paga
                 printf("Qual a data do pagamento da parcela? (dd/mm/aaaa) ");
                 scanf("%d/%d/%d", &registro[user].dataPag[0][i], &registro[user].dataPag[1][i], &registro[user].dataPag[2][i]);
                 limpd();
+                registro[user].valorParc[i][1]=1; //em caso positivo, marca a parcela como paga
                 printf("A parcela %d foi marcada como paga!\n", i+1);
                 break;
             }
-            else{
-                registro[user].valorParc[i][1]=0;
+            else{ //se estiver marcada como paga:
+                registro[user].valorParc[i][1]=0; //remove a marcacao da parceça como paga
                 printf("A parcela %d foi marcada como não paga!\n", i+1);
             }
             break;
-        case 4:
+        case 4: //Vizualizar informações do cliente
             printf("Aqui estão todos os clientes registrados:\n");
             for(i=0; i<100; i++) {
-                if(registro[i].verReg == 1) {
+                if(registro[i].verReg == 1){ 
                     printf("%s\n", registro[i].nome);
                 }
             }
@@ -224,27 +225,28 @@ int main() {
             user=i;
             puts("Aqui estão as informações do cliente:\n");
             printf("Nome: %s", registro[user].nome);
-            printf("\nData de nascimento: %d/%d/%d", registro[user].dataNas[0], registro[user].dataNas[1], registro[user].dataNas[2]);
-            printf("\nCPF: %d.%d.%d-%d", registro[user].cpf[0], registro[user].cpf[1], registro[user].cpf[2], registro[user].cpf[3]);
+            printf("\nData de nascimento: %2d/%2d/%2d", registro[user].dataNas[0], registro[user].dataNas[1], registro[user].dataNas[2]);
+            printf("\nCPF: %3d.%3d.%3d-%2d", registro[user].cpf[0], registro[user].cpf[1], registro[user].cpf[2], registro[user].cpf[3]);
             printf("\nEndereço: %s", registro[user].endereco);
-            if(registro[user].verEmp == 1){
+            if(registro[user].verEmp == 1){ //verifica se o cliente tem um emprestimo
                 printf("\nValor do emprestimo: %.2lf", registro[user].emp);
-                printf("\nData do emprestimo: %d/%d/%d", registro[user].dataEmp[0], registro[user].dataEmp[1], registro[user].dataEmp[2]);
+                printf("\nData do emprestimo: %2d/%2d/%2d", registro[user].dataEmp[0], registro[user].dataEmp[1], registro[user].dataEmp[2]);
                 printf("\nParcelas do emprestimo:\n ");
             }
-            else{
+            else{ //se nao tiver, exibe uma mensagem no lugar de onde as informações do emprestimo seriam exibidas
                 printf("\nEste cliente não possui um emprestimo ou ocorreu um erro em sua ultima atualização do emprestimo!\n\n");
+                break; //impede o caso de prosseguir caso o verificador de emprestimo seja 0, mas ainda exista valor para o campo numParc
             }
-            for(i=0; i<registro[user].numParc; i++){
-                if(registro[user].valorParc[i][1] == 0){
+            for(i=0; i<registro[user].numParc; i++){ //imprime as informacoes das parcelas
+                if(registro[user].valorParc[i][1] == 0){ //verifica se a parcela ainda nao foi paga
                     printf("Parcela %d: %lf (Não paga. Vencimento em %d/%d/%d)\n", i+1, registro[user].valorParc[i][0], registro[user].dataVenc[0][i], registro[user].dataVenc[1][i], registro[user].dataVenc[2][i]);
                 }
-                else{
+                else{ //caso tenha sido paga:
                     printf("Parcela %d: %lf (Paga em %d/%d/%d)\n", i+1, registro[user].valorParc[i][0], registro[user].dataPag[0][i], registro[user].dataPag[1][i], registro[user].dataPag[2][i]);
                 }
             }
             break;
-        case 5:
+        case 5: //Editar informacoes do cliente || Esse caso apenas apresenta estruturas ja apresentadas em casos anteriores
             printf("Aqui estão todos os clientes registrados:\n");
             for(i=0; i<100; i++) {
                 if(registro[i].verReg == 1) {
@@ -299,7 +301,7 @@ int main() {
                     printf("A data de nascimento foi corrigida!\n");
                     break;
                 case 5:
-                    registro[user].verEmp=0;
+                    registro[user].verEmp=0; //retira o verificador caso ocorra algum erro no processo
                     for(i=0; i<10; i++){
                         registro[user].valorParc[i][1]=0;
                     }
@@ -320,15 +322,26 @@ int main() {
                         printf("Este não é um número de parcelas válido");
                         break;
                     }
+                    for(i=0; i<registro[user].numParc; i++){
                         printf("\nQual o valor da parcela %d? ", i+1);
                         scanf("%lf", &registro[user].valorParc[i][0]);
                         limpd();
-                    registro[user].verEmp=1;
+                    }
+                    for(i=0; i<registro[user].numParc; i++){
+                        registro[user].dataVenc[0][i]=registro[user].dataEmp[0];
+                        registro[user].dataVenc[1][i]=registro[user].dataEmp[1];
+                        registro[user].dataVenc[2][i]=registro[user].dataEmp[2];
+                        data(&registro[user].dataVenc[0][i], &registro[user].dataVenc[1][i], &registro[user].dataVenc[2][i], i);
+                    }
+                    registro[user].verEmp=1; //Quando ocorre com sucesso o verificador é adicionado novamente
                     printf("\nEmprestimo para o cliente %s foi alterado!\n", registro[user].nome);
+                    break;
+                default:
+                    printf("Essa não é uma opção válida");
                     break;
                 }
             break;
-        case 6:
+        case 6: //Excluir cliente
             printf("Aqui estão todos os clientes registrados:\n");
             for(i=0; i<100; i++){
                 if(registro[i].verReg == 1){
@@ -348,8 +361,8 @@ int main() {
                 break;
             }
             user=i;
-            registro[user].verReg=0;
-            registro[user].verEmp=0;
+            registro[user].verReg=0; //Remove o verificador de registro
+            registro[user].verEmp=0; //Remove o verificador de emprestimo
             printf("Cliente excluido com sucesso!\n");
             break;
         case 7:
@@ -366,19 +379,18 @@ int main() {
 
 
 
-void data(int *a, int *b, int *c, int parc){
+void data(int *a, int *b, int *c, int parc){ //definicao da funcao data: a=dia; b=mese; c=ano; parc=numero da parcela a se calcular
     int i, dias[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
     
-    *b+=parc+1;
-	while (*b > 12){
+    *b+=parc+1; //como parc sempre sera i na main, que comeca em 0 nos loops 'for', b sera parc+1
+	while (*b > 12){ //corrige o ano se o mes for maior que 12
 	*b-=12;
 	(*c)++;
 	}
-	if (*c % 4 == 0 && *c % 100 != 0 || *c % 400 == 0){
+	if (*c % 4 == 0 && *c % 100 != 0 || *c % 400 == 0){ //apos corrigir o ano, verifica se o ano e bissexto
     dias[1] = 29;
     }
-    if (*a > dias[*b-1]){
+    if (*a > dias[*b-1]){ //se o dia for maior que o numero de dias no mes, o dia sera o ultimo dia do mes
 	    *a = dias[*b-1];
     }
-	printf ("%d/%d/%d\n", *a, *b, *c);
 }
